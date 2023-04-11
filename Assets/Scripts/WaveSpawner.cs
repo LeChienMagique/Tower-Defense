@@ -20,13 +20,15 @@ public class WaveSpawner: MonoBehaviour {
 			StartCoroutine(SpawnWave());
 		}
 
-		countdown              -= Time.deltaTime;
+		countdown -= Time.deltaTime;
+		countdown =  Mathf.Clamp(countdown, 0, Mathf.Infinity);
 		
-		waveCountdownText.text = Math.Round(countdown).ToString();
+		waveCountdownText.text = $"{countdown:00.00}";
 	}
 
 	private IEnumerator SpawnWave() {
 		waveIndex++;
+		PlayerStats.Rounds++;
 		for (int i = 0 ; i < waveIndex ; i++) {
 			SpawnEnemy();
 			yield return new WaitForSeconds(.5f);
