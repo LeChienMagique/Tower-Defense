@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class BuildManager: MonoBehaviour {
 	public static BuildManager instance;
+	public        NodeUI       nodeUI;
 
 	private void Awake() {
 		if (instance is not null) {
@@ -19,33 +20,40 @@ public class BuildManager: MonoBehaviour {
 	public GameObject laserBeamerPrefab;
 
 	public GameObject buildEffect;
-	
+	public GameObject sellEffect;
+
 	private TurretBlueprint turretToBuild;
+	private Node            selectedNode;
 
 	public bool CanBuild => turretToBuild != null;
 
 	public bool HasMoney => PlayerStats.Money >= turretToBuild.cost;
 
-	public void SelectTurretToBuild(TurretBlueprint turret) {
-		turretToBuild = turret;
-	}
-
-	public void BuildTurretOn(Node node) {
-		if (PlayerStats.Money < turretToBuild.cost) {
-			Debug.Log("Not enough money to build this turret!");
+	public void SelectNode(Node node) {
+		if (selectedNode == node) {
+			DeselectNode();
 			return;
 		}
-
-		PlayerStats.Money -= turretToBuild.cost;
 		
-		GameObject turret = Instantiate(turretToBuild.prefab,
-		                                node.GetBuildPosition(),
-		                                Quaternion.identity);
-		node.turret = turret;
+		selectedNode  = node;
+		turretToBuild = null;
 
-		GameObject effect = Instantiate(buildEffect, node.GetBuildPosition(), Quaternion.identity);
-		Destroy(effect, 5f);
-		
-		Debug.Log($"Turret built! Money left: ${PlayerStats.Money}");
+		nodeUI.SetTarget(node);
+	}
+
+	public void DeselectNode() {
+		selectedNode = null;
+		nodeUI.Hide();
+	}
+
+	public void SelectTurretToBuild(TurretBlueprint turret) {
+		turretToBuild = turret;
+		selectedNode  = null;
+
+		DeselectNode();
+	}
+
+	public TurretBlueprint GetTurretToBuild() {
+		return turretToBuild;
 	}
 }
