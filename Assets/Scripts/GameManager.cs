@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class GameManager: MonoBehaviour {
 	public static bool       GameIsOver;
-	public  GameObject gameOverUI;
+	public        GameObject gameOverUI;
+	public        GameObject completeLevelUI;
 
 	private void Start() {
 		GameIsOver = false;
@@ -19,6 +20,14 @@ public class GameManager: MonoBehaviour {
 		if (PlayerStats.Lives <= 0) {
 			EndGame();
 		}
+	}
+	public int levelToUnlock = 2;
+
+	public void WinLevel() {
+		GameIsOver = true;
+		PlayerPrefs.SetInt("levelReached", levelToUnlock);
+		
+		completeLevelUI.SetActive(true);
 	}
 
 	private void EndGame() {
